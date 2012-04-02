@@ -53,6 +53,19 @@
 				addPlanet( 15, 0.7, 100, 0 , "planet_sq1_on" );
 				addPlanet( 25, 0.5, 150, 0, "planet_sl1_on" );
 				addPlanet( 35, 0.3, 220, 0.7, "terra_color" );
+
+                //Draws the sun
+                var sun_bmp = new Bitmap("img/sun.png");
+                sun_bmp.regX = 70 / 2;
+                sun_bmp.regY = 70 / 2;
+                sun_bmp.x = sunX;
+                sun_bmp.y = sunY;
+                stage.addChild( sun_bmp );
+                stage.children = stage.children.slice( 0 , 2 );
+
+                container.x = sunX;
+                container.y = sunY;
+                
 				Ticker.addListener( window, true)
                 TickerControls.init();
 			}
@@ -77,18 +90,7 @@
 			function tick() {
 				time = new Date().getTime() * 0.002; // 0.002 increment for more speed
 				
-				//Draws the sun
-				var sun_bmp = new Bitmap("img/sun.png");
-				sun_bmp.regX = 70 / 2;
-				sun_bmp.regY = 70 / 2;
-				sun_bmp.x = sunX;
-				sun_bmp.y = sunY;
-				stage.addChild( sun_bmp );
-				stage.children = stage.children.slice( 0 , 2 );
-			
-				//ctx.translate( sunX, sunY ); // Sets Sun center point to context
-				container.x = sunX;
-				container.y = sunY;
+
 			
 				// Draws each planet each frame
 				var num_planets =container.children.length;
