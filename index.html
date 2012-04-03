@@ -17,8 +17,9 @@
 		<script src="lib/easeljs/utils/Ticker.js" ></script>
 
 		<!-- Project includes -->
+		<script src="lib/proj/Sun.js" ></script>
 		<script src="lib/proj/Planet.js" ></script>
-        <script src="lib/proj/tickercontrols.js" ></script>
+		<script src="lib/proj/tickercontrols.js" ></script>
 
 	</head>
 	<body onload="init();">
@@ -29,18 +30,13 @@
 			//var ctx = canvas.getContext('2d');
 			var WIDTH = canvas.width;
 			var HEIGHT = canvas.height;
-			var planets=[]; //array to hold planets
-			var star = []; //array to hold stars
 		
 			var sunX = WIDTH / 2;
 			var sunY = HEIGHT / 2;
 		
 			var time;
-		
 			var stage;
-		
 			var container;
-		
 			var instance = this;
 		
 			// Number of planets added to the Galaxy
@@ -53,8 +49,16 @@
 				addPlanet( 15, 0.7, 100, 0 , "planet_sq1_on" );
 				addPlanet( 25, 0.5, 150, 0, "planet_sl1_on" );
 				addPlanet( 35, 0.3, 220, 0.7, "terra_color" );
+				
+				var sun_bmp = new Sun( sunX, sunY, 70, stage, "img/sun.png");
+				stage.addChild( sun_bmp );
+				
+				//Translate container origin to sun center point
+				container.x = sunX;
+				container.y = sunY;
+				
 				Ticker.addListener( window, true)
-                TickerControls.init();
+				TickerControls.init();
 			}
 		
 			// Saves Planet Object to array
@@ -65,7 +69,8 @@
 			}
 			
 			
-		
+			
+			// Pass 2 objects with x, y and respective radius
 			function isCollision(obj1, r1, obj2, r2) {
 				var a = r1 + r2;
 				var dx = obj1.x - obj2.x;
@@ -73,23 +78,11 @@
 				return a * a > (dx * dx + dy * dy);
 			}
 		
-		
+			var t = 0;
 			function tick() {
-				time = new Date().getTime() * 0.002; // 0.002 increment for more speed
+				//time = new Date().getTime() * 0.002; // 0.002 increment for more speed
+				time = t;
 				
-				//Draws the sun
-				var sun_bmp = new Bitmap("img/sun.png");
-				sun_bmp.regX = 70 / 2;
-				sun_bmp.regY = 70 / 2;
-				sun_bmp.x = sunX;
-				sun_bmp.y = sunY;
-				stage.addChild( sun_bmp );
-				stage.children = stage.children.slice( 0 , 2 );
-			
-				//ctx.translate( sunX, sunY ); // Sets Sun center point to context
-				container.x = sunX;
-				container.y = sunY;
-			
 				// Draws each planet each frame
 				var num_planets =container.children.length;
 				for ( var i = 0; i < num_planets; i++ ) {
@@ -97,10 +90,8 @@
 					current_planet.draw( canvas.getContext('2d'), true, time  );
 					//current_planet.orbit_adjust += 0.001;
 					
-					
 					if ( isCollision( current_planet, current_planet.radius, { x: 0, y: 0 }, 30 ) ) { // object 0,0 is current translate possition
 						console.log( 'Sun Collision ' + current_planet.type + ' hits the sun' );
-						
 					}
 					
 					for ( var f = 0; f < num_planets; f++ ) {
@@ -114,10 +105,9 @@
 				}
 			
 				stage.update();
+				t+= 0.07;
 			};
-		
-		
-
+			
 		</script>
 	</body>
 </html>

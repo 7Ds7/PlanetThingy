@@ -1,8 +1,8 @@
 #tickerControls {
-    width: 150px;
-    height: 20px;
-    position: fixed;
-    bottom: 0;
-    right: 0;
-    background-color: #ccc;
+	height: 20px;
+	position: fixed;
+	bottom: 0;
+	right: 0;
+	background-color: #ccc;
+	padding: 10px;
 }
