@@ -57,6 +57,7 @@
 				container.x = sunX;
 				container.y = sunY;
 				
+
 				Ticker.addListener( window, true)
 				TickerControls.init();
 			}
@@ -82,7 +83,7 @@
 			function tick() {
 				//time = new Date().getTime() * 0.002; // 0.002 increment for more speed
 				time = t;
-				
+
 				// Draws each planet each frame
 				var num_planets =container.children.length;
 				for ( var i = 0; i < num_planets; i++ ) {
