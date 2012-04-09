@@ -7,10 +7,13 @@
 
 		<script src="lib/easeljs/utils/UID.js" ></script>
 		<script src="lib/easeljs/geom/Matrix2D.js" ></script>
+		<script src="lib/easeljs/geom/Rectangle.js" ></script>
 		<script src="lib/easeljs//events/MouseEvent.js"></script>
 		<script src="lib/easeljs/display/DisplayObject.js" ></script>
 		<script src="lib/easeljs/display/Container.js" ></script>
 		<script src="lib/easeljs/display/Bitmap.js" ></script>
+		<script src="lib/easeljs/display/BitmapAnimation.js" ></script>
+		<script src="lib/easeljs/display/SpriteSheet.js" ></script>
 		<script src="lib/easeljs/display/Graphics.js" ></script>
 		<script src="lib/easeljs/display/Shape.js"></script>
 		<script src="lib/easeljs/display/Stage.js" ></script>
@@ -19,6 +22,7 @@
 		<!-- Project includes -->
 		<script src="lib/proj/Sun.js" ></script>
 		<script src="lib/proj/Planet.js" ></script>
+		<script src="lib/proj/Asteroid.js" ></script>
 		<script src="lib/proj/tickercontrols.js" ></script>
 
 	</head>
@@ -38,6 +42,8 @@
 			var stage;
 			var container;
 			var instance = this;
+			
+			var asteroid;
 		
 			// Number of planets added to the Galaxy
 			function init() {
@@ -53,10 +59,14 @@
 				var sun_bmp = new Sun( sunX, sunY, 70, stage, "img/sun.png");
 				stage.addChild( sun_bmp );
 				
+				
+				
 				//Translate container origin to sun center point
 				container.x = sunX;
 				container.y = sunY;
 				
+				asteroid = new Asteroid( 15, 0.7, 100, 0 , "img/asteroid.png" );
+				container.addChild( asteroid );
 
 				Ticker.addListener( window, true)
 				TickerControls.init();
@@ -83,7 +93,11 @@
 			function tick() {
 				//time = new Date().getTime() * 0.002; // 0.002 increment for more speed
 				time = t;
-
+				
+				asteroid.draw(  canvas.getContext('2d'), true );
+					
+				
+				var asteroid_danger = asteroid.danger;
 				// Draws each planet each frame
 				var num_planets =container.children.length;
 				for ( var i = 0; i < num_planets; i++ ) {
@@ -95,10 +109,26 @@
 						console.log( 'Sun Collision ' + current_planet.type + ' hits the sun' );
 					}
 					
+					
 					for ( var f = 0; f < num_planets; f++ ) {
 						if ( f !== i ){
+							
+							
+							// Will asteroid collide with planet in a near future ?
+							if ( container.children[f].type === "img/asteroid.png" ) {
+								var current_asteroid = container.children[f];
+								if ( isCollision( current_asteroid,  128, current_planet, current_planet.radius  ) ) {
+									current_asteroid.danger = "warn";
+									//console.log( 'Planet Collision between ' + current_asteroid.type + ' and ' + container.children[i].type );
+								} 	
+							}
+							
+							// Is any container child colliding with one sibiling ?	
 							if ( isCollision( container.children[f], container.children[f].radius, current_planet, current_planet.radius ) ) {
 								console.log( 'Planet Collision between ' + container.children[f].type + ' and ' + container.children[i].type );
+								if ( container.children[f].type == "img/asteroid.png") {
+									container.children[f].danger = "hit";
+								}
 							}
 							
 						}
