@@ -40,17 +40,19 @@
 		
 			var time;
 			var stage;
-			var container;
+			var container_planets;
+			var container_asteroids;
 			var instance = this;
 			
-			var asteroid;
 		
 			// Number of planets added to the Galaxy
 			function init() {
 				stage = new Stage( canvas );
 				stage.autoClear = true;
-				container = new Container();
-				stage.addChild( container );
+				container_planets = new Container();
+				container_asteroids = new Container();
+				stage.addChild( container_planets );
+				stage.addChild( container_asteroids );
 			
 				addPlanet( 15, 0.7, 100, 0 , "planet_sq1_on" );
 				addPlanet( 25, 0.5, 150, 0, "planet_sl1_on" );
@@ -61,22 +63,33 @@
 				
 				
 				
-				//Translate container origin to sun center point
-				container.x = sunX;
-				container.y = sunY;
+				//Translate container_planets origin to sun center point
+				container_planets.x = sunX;
+				container_planets.y = sunY;
 				
-				asteroid = new Asteroid( 15, 0.7, 100, 0 , "img/asteroid.png" );
-				container.addChild( asteroid );
+				container_asteroids.x = sunX;
+				container_asteroids.y = sunY;
+				
+				addAsteroid( 16, 0.7, 100, 0 , "asteroid" );
+				addAsteroid( 16, 0.8, 100, 0 , "asteroid" );
+				
 
 				Ticker.addListener( window, true)
 				TickerControls.init();
 			}
 		
-			// Saves Planet Object to array
+			// Saves Planet to container_planets
 			function addPlanet( radius, velocity , orbit, orbit_adjust,  type ) {
 				console.log('--- Add Planet ---');
-				var planet = new Planet( radius, velocity, orbit, orbit_adjust , "img/" + type + ".gif" );
-				container.addChild( planet );
+				var planet = new Planet( radius, velocity, orbit, orbit_adjust , type );
+				container_planets.addChild( planet );
+			}
+			
+			// Saves Asteroid to container_asteroids
+			function addAsteroid( radius, velocity , orbit, orbit_adjust,  type ) {
+				console.log('--- Add Asteroid ---');
+				var asteroid = new Asteroid( radius, velocity, orbit, orbit_adjust , type );
+				container_asteroids.addChild( asteroid );
 			}
 			
 			
@@ -94,16 +107,11 @@
 				//time = new Date().getTime() * 0.002; // 0.002 increment for more speed
 				time = t;
 				
-				asteroid.draw(  canvas.getContext('2d'), true );
-					
-				
-				var asteroid_danger = asteroid.danger;
-				// Draws each planet each frame
-				var num_planets =container.children.length;
+				// Draws each planet each frame and check Collisions
+				var num_planets = container_planets.children.length;
 				for ( var i = 0; i < num_planets; i++ ) {
-					var current_planet = container.children[i];
+					var current_planet = container_planets.children[i];
 					current_planet.draw( canvas.getContext('2d'), true, time  );
-					//current_planet.orbit_adjust += 0.001;
 					
 					if ( isCollision( current_planet, current_planet.radius, { x: 0, y: 0 }, 30 ) ) { // object 0,0 is current translate possition
 						console.log( 'Sun Collision ' + current_planet.type + ' hits the sun' );
@@ -112,27 +120,39 @@
 					
 					for ( var f = 0; f < num_planets; f++ ) {
 						if ( f !== i ){
-							
-							
-							// Will asteroid collide with planet in a near future ?
-							if ( container.children[f].type === "img/asteroid.png" ) {
-								var current_asteroid = container.children[f];
-								if ( isCollision( current_asteroid,  128, current_planet, current_planet.radius  ) ) {
-									current_asteroid.danger = "warn";
-									//console.log( 'Planet Collision between ' + current_asteroid.type + ' and ' + container.children[i].type );
-								} 	
-							}
-							
-							// Is any container child colliding with one sibiling ?	
-							if ( isCollision( container.children[f], container.children[f].radius, current_planet, current_planet.radius ) ) {
-								console.log( 'Planet Collision between ' + container.children[f].type + ' and ' + container.children[i].type );
-								if ( container.children[f].type == "img/asteroid.png") {
-									container.children[f].danger = "hit";
-								}
+							// Is any container_planets child colliding with one sibiling ?	
+							if ( isCollision( container_planets.children[f], container_planets.children[f].radius, current_planet, current_planet.radius ) ) {
+								console.log( 'Planet Collision between ' + container_planets.children[f].type + ' and ' + container_planets.children[i].type );
 							}
 							
 						}
 					}
+				}
+				
+				
+				// Draws each asteroid each frame and check Collisions
+				var num_asteroids = container_asteroids.children.length;
+				for ( var i = 0; i < num_asteroids; i++ ) {
+					var current_asteroid = container_asteroids.children[i];
+					current_asteroid.draw( canvas.getContext('2d'), true );
+					
+					var num_planets = container_planets.children.length;
+					for ( var f = 0; f < num_planets; f++ ) {
+						var current_planet_hit = container_planets.children[f];
+						
+						if ( isCollision( current_planet_hit, current_planet_hit.radius, current_asteroid, current_asteroid.radius ) ) {
+							current_asteroid.danger="hit";
+							console.log( 'Asteroid ' + current_planet_hit.type + ' hits the sun' );
+							break;
+						}else if ( isCollision( current_asteroid,  128, current_planet_hit, current_planet_hit.radius  ) ) {
+							current_asteroid.danger = "warn";
+							console.log( 'Asteroid Collision between ' + current_asteroid.type + ' and ' + current_planet_hit.type );
+							break;
+						}else {
+							current_asteroid.danger = "none";
+						}
+					}
+					
 				}
 			
 				stage.update();
