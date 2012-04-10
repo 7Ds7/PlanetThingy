@@ -27,7 +27,7 @@
 
 	</head>
 	<body onload="init();">
-		<canvas id="scene" width=800 height=600 style="background:#000;"></canvas>
+		<canvas id="scene" width=800 height=600 style="background: #000;"></canvas>
 		<script>
 
 			var canvas = document.getElementById('scene');
@@ -42,6 +42,7 @@
 			var stage;
 			var container_planets;
 			var container_asteroids;
+			var container_orbits;
 			var instance = this;
 			
 		
@@ -51,8 +52,10 @@
 				stage.autoClear = true;
 				container_planets = new Container();
 				container_asteroids = new Container();
+				container_orbits = new Container();
 				stage.addChild( container_planets );
 				stage.addChild( container_asteroids );
+				stage.addChild( container_orbits );
 			
 				addPlanet( 15, 0.7, 100, 0 , "planet_sq1_on" );
 				addPlanet( 25, 0.5, 150, 0, "planet_sl1_on" );
@@ -62,17 +65,19 @@
 				stage.addChild( sun_bmp );
 				
 				
-				
 				//Translate container_planets origin to sun center point
 				container_planets.x = sunX;
 				container_planets.y = sunY;
-				
 				container_asteroids.x = sunX;
 				container_asteroids.y = sunY;
+				container_orbits.x = sunX;
+				container_orbits.y = sunY;
 				
-				addAsteroid( 16, 0.7, 100, 0 , "asteroid" );
-				addAsteroid( 16, 0.8, 100, 0 , "asteroid" );
-				
+				var iX = -( window.WIDTH / 2 ) + 16;
+				var iY =  -( window.HEIGHT / 2 ) + 16;
+				addAsteroid( iX, iY, 16, 0.7, 100, 0 , "asteroid" );
+				addAsteroid( -(iX), -(iY), 16, -0.8, 100, 0 , "asteroid" );
+				addAsteroid( -(iX), -(iY), 16, -0.8, 100, 0 , "asteroid" );
 
 				Ticker.addListener( window, true)
 				TickerControls.init();
@@ -86,9 +91,9 @@
 			}
 			
 			// Saves Asteroid to container_asteroids
-			function addAsteroid( radius, velocity , orbit, orbit_adjust,  type ) {
+			function addAsteroid( iX, iY, radius, velocity , orbit, orbit_adjust,  type ) {
 				console.log('--- Add Asteroid ---');
-				var asteroid = new Asteroid( radius, velocity, orbit, orbit_adjust , type );
+				var asteroid = new Asteroid( iX, iY, radius, velocity, orbit, orbit_adjust , type );
 				container_asteroids.addChild( asteroid );
 			}
 			
@@ -115,8 +120,7 @@
 					
 					if ( isCollision( current_planet, current_planet.radius, { x: 0, y: 0 }, 30 ) ) { // object 0,0 is current translate possition
 						console.log( 'Sun Collision ' + current_planet.type + ' hits the sun' );
-					}
-					
+					}	
 					
 					for ( var f = 0; f < num_planets; f++ ) {
 						if ( f !== i ){
@@ -127,6 +131,14 @@
 							
 						}
 					}
+					
+					var g = new Graphics();
+					g.beginFill(Graphics.getRGB(255,0,0));
+					g.drawCircle( 0,0, 0.5 );
+					var s = new Shape(g);
+					s.x = current_planet.x;
+					s.y = current_planet.y;
+					container_orbits.addChild( s );
 				}
 				
 				
@@ -134,7 +146,6 @@
 				var num_asteroids = container_asteroids.children.length;
 				for ( var i = 0; i < num_asteroids; i++ ) {
 					var current_asteroid = container_asteroids.children[i];
-					current_asteroid.draw( canvas.getContext('2d'), true );
 					
 					var num_planets = container_planets.children.length;
 					for ( var f = 0; f < num_planets; f++ ) {
@@ -152,8 +163,18 @@
 							current_asteroid.danger = "none";
 						}
 					}
+					current_asteroid.draw( canvas.getContext('2d'), true );
 					
+					var g = new Graphics();
+					g.beginFill(Graphics.getRGB(255,0,0));
+					g.drawCircle( 0,0, 0.5 );
+					var s = new Shape(g);
+					s.x = current_asteroid.x;
+					s.y = current_asteroid.y;
+					container_orbits.addChild( s );
 				}
+				
+				container_orbits.children = container_orbits.children.slice(container_orbits.children.length - 700, container_orbits.children.length);
 			
 				stage.update();
 				t+= 0.07;
