@@ -31,7 +31,7 @@
 		<script>
 
 			var canvas = document.getElementById('scene');
-			//var ctx = canvas.getContext('2d');
+			var ctx = canvas.getContext('2d');
 			var WIDTH = canvas.width;
 			var HEIGHT = canvas.height;
 		
@@ -116,7 +116,8 @@
 				var num_planets = container_planets.children.length;
 				for ( var i = 0; i < num_planets; i++ ) {
 					var current_planet = container_planets.children[i];
-					current_planet.draw( canvas.getContext('2d'), true, time  );
+                    current_planet.update( time  );
+					current_planet.draw( ctx );
 					
 					if ( isCollision( current_planet, current_planet.radius, { x: 0, y: 0 }, 30 ) ) { // object 0,0 is current translate possition
 						console.log( 'Sun Collision ' + current_planet.type + ' hits the sun' );
