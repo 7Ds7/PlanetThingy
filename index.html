@@ -59,9 +59,9 @@
 				stage.addChild( container_asteroids );
 				
 			
-				addPlanet( 15, 0.7, 100, 0 , "planet_sq1_on",0 );
-				addPlanet( 25, 0.5, 150, 0, "planet_sl1_on",1 ); 
-				addPlanet( 35, 0.3, 220, 0, "terra_color",2 );
+				addPlanet( 15, 0.7, 100, 0 , "planet_sq1_on", 0 );
+				addPlanet( 25, 0.5, 150, 0, "planet_sl1_on", 1 );
+				addPlanet( 35, 0.3, 220, 0, "terra_color", 2 );
 				
 				
 				var sun_bmp = new Sun( sunX, sunY, 70, stage, "img/sun.png");
@@ -87,9 +87,9 @@
 			}
 		
 			// Saves Planet to container_planets
-			function addPlanet( radius, velocity , orbit, orbit_adjust,  type ) {
+			function addPlanet( radius, velocity , orbit, orbit_adjust,  type, index ) {
 				console.log('--- Add Planet ---');
-				var planet = new Planet( radius, velocity, orbit, orbit_adjust , type );
+				var planet = new Planet( radius, velocity, orbit, orbit_adjust , type, index );
 				container_planets.addChild( planet );
 			}
 			
@@ -120,9 +120,9 @@
 				var num_planets = container_planets.children.length;
 				for ( var i = 0; i < num_planets; i++ ) {
 					var current_planet = container_planets.children[i];
-                    current_planet.update( time  );
-					current_planet.draw( ctx );
-					
+					current_planet.update( time  );
+                    current_planet.draw( ctx );
+
 					if ( isCollision( current_planet, current_planet.radius, { x: 0, y: 0 }, 30 ) ) { // object 0,0 is current translate possition
 						console.log( 'Sun Collision ' + current_planet.type + ' hits the sun' );
 					}	
