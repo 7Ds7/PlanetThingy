@@ -53,13 +53,16 @@
 				container_planets = new Container();
 				container_asteroids = new Container();
 				container_orbits = new Container();
+				
+				stage.addChild( container_orbits );
 				stage.addChild( container_planets );
 				stage.addChild( container_asteroids );
-				stage.addChild( container_orbits );
+				
 			
-				addPlanet( 15, 0.7, 100, 0 , "planet_sq1_on" );
-				addPlanet( 25, 0.5, 150, 0, "planet_sl1_on" );
-				addPlanet( 35, 0.3, 220, 0.7, "terra_color" );
+				addPlanet( 15, 0.7, 100, 0 , "planet_sq1_on",0 );
+				addPlanet( 25, 0.5, 150, 0, "planet_sl1_on",1 ); 
+				addPlanet( 35, 0.3, 220, 0, "terra_color",2 );
+				
 				
 				var sun_bmp = new Sun( sunX, sunY, 70, stage, "img/sun.png");
 				stage.addChild( sun_bmp );
@@ -99,6 +102,7 @@
 			
 			
 			
+			
 			// Pass 2 objects with x, y and respective radius
 			function isCollision(obj1, r1, obj2, r2) {
 				var a = r1 + r2;
@@ -133,13 +137,13 @@
 						}
 					}
 					
-					var g = new Graphics();
-					g.beginFill(Graphics.getRGB(255,0,0));
+					/*var g = new Graphics();
+					g.beginFill( Graphics.getRGB(255,0,0) );
 					g.drawCircle( 0,0, 0.5 );
 					var s = new Shape(g);
-					s.x = current_planet.x;
-					s.y = current_planet.y;
-					container_orbits.addChild( s );
+					s.x = current_planet.x + ( current_planet.radius / 2 );
+					s.y = current_planet.y + ( current_planet.radius / 2 );
+					container_orbits.addChild( s );*/
 				}
 				
 				
@@ -154,11 +158,13 @@
 						
 						if ( isCollision( current_planet_hit, current_planet_hit.radius, current_asteroid, current_asteroid.radius ) ) {
 							current_asteroid.danger="hit";
+							current_planet_hit.adjust_orbit = true;
+							current_planet_hit.orbit_adjust += 0.001;
 							console.log( 'Asteroid ' + current_planet_hit.type + ' hits the sun' );
 							break;
 						}else if ( isCollision( current_asteroid,  128, current_planet_hit, current_planet_hit.radius  ) ) {
 							current_asteroid.danger = "warn";
-							console.log( 'Asteroid Collision between ' + current_asteroid.type + ' and ' + current_planet_hit.type );
+							console.log( 'Asteroid Danger on ' + current_asteroid.type + ' and ' + current_planet_hit.type );
 							break;
 						}else {
 							current_asteroid.danger = "none";
@@ -166,13 +172,13 @@
 					}
 					current_asteroid.draw( canvas.getContext('2d'), true );
 					
-					var g = new Graphics();
+					/*var g = new Graphics();
 					g.beginFill(Graphics.getRGB(255,0,0));
 					g.drawCircle( 0,0, 0.5 );
 					var s = new Shape(g);
 					s.x = current_asteroid.x;
 					s.y = current_asteroid.y;
-					container_orbits.addChild( s );
+					container_orbits.addChild( s );*/
 				}
 				
 				container_orbits.children = container_orbits.children.slice(container_orbits.children.length - 700, container_orbits.children.length);
